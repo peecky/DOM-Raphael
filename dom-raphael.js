@@ -288,6 +288,18 @@
 
     };
 
+	var _initElement = function(canvas, that, transformMatrix, type) {
+        var $el = that.$el = createNewAbs$AtPos(transformMatrix, true);
+        that.id = nextElemId++;
+        that.canvas = canvas;
+        that.type = type;
+        that.dataMap = {};
+		that.attrs = {};
+
+        canvas.$el.append($el);
+        canvas.elements.push(that);
+	};
+
     //Text class constructor..
     var Text = function (canvas, x, y, text) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y);
@@ -336,64 +348,35 @@
 	var Path = function(canvas, pathString) {
 		// dummy implementation of path
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(0, 0, 1, 1);
-        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
-        this.id = nextElemId++;
-        this.canvas = canvas;
-        this.type = "rect";
-        this.dataMap = {};
-
-        canvas.$el.append($el);
-        canvas.elements.push(this);
+		_initElement(canvas, this, transformMatrix, 'path');
 	};
 	Path.prototype = elementFunctions;
 
     //Rectangle class contructor..
     var Rect = function (canvas, x, y, width, height) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
-        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
-        this.id = nextElemId++;
-        this.canvas = canvas;
-        this.type = "rect";
-        this.dataMap = {};
-
-        canvas.$el.append($el);
-        canvas.elements.push(this);
+		_initElement(canvas, this, transformMatrix, 'rect');
     };
     Rect.prototype = elementFunctions;
 
     var Circle = function (canvas, x, y, r) {
-		// dummy implementation of circle
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x-r, y-r, r*2, r*2);
-        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
-        this.id = nextElemId++;
-        this.canvas = canvas;
-        this.type = "circle";
-        this.dataMap = {};
-		$el.css({
+		_initElement(canvas, this, transformMatrix, 'circle');
+		this.$el.css({
 			'border-radius': '50%',
 			'border-width': '1px'
 		});
-
-        canvas.$el.append($el);
-        canvas.elements.push(this);
     };
     Circle.prototype = elementFunctions;
 
 	var Image = function(canvas, src, x, y, width, height) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
-        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
-        this.id = nextElemId++;
-        this.canvas = canvas;
-        this.type = "image";
-        this.dataMap = {};
-		$el.css({
+		_initElement(canvas, this, transformMatrix, 'image');
+		this.$el.css({
 			'background-image': 'url(' + src + ')',
 			'background-repeat': 'no-repeat',
 			'background-size': '2px 2px'
 		});
-
-        canvas.$el.append($el);
-        canvas.elements.push(this);
 	};
     Image.prototype = elementFunctions;
  
