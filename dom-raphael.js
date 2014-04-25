@@ -271,6 +271,9 @@
                 default:
                     css[attr] = value;
                 }
+				if (setValues) {
+					self.attrs[attr] = value;
+				}
             });
 
             if (transformMatrix) {
