@@ -199,7 +199,7 @@
                     attrs.push(transformMatrix.d);
                     break;
                 case "fill":
-                    attrs.push(elStyle[self.type === "Text" ? "color" : "background-color"]);
+                    attrs.push(elStyle[self.type === "text" ? "color" : "background-color"]);
                     break;
                 case "stroke":
                     attrs.push(elStyle["border-color"]);
@@ -247,7 +247,7 @@
                     getTransformMatrix().d = value;
                     break;
                 case "fill":
-                    css[self.type === "Text" ? "color" : "background-color"] = value;
+                    css[self.type === "text" ? "color" : "background-color"] = value;
                     break;
                 case "stroke":
                     css["border-color"] = value;
@@ -285,7 +285,7 @@
         var $el = this.$el = createNewAbs$AtPos(transformMatrix, false);
         this.id = nextElemId++;
         this.canvas = canvas;
-        this.type = "Text";
+        this.type = "text";
         this.dataMap = {};
 
         //Center text around point..
@@ -330,7 +330,7 @@
         var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
         this.id = nextElemId++;
         this.canvas = canvas;
-        this.type = "Rect";
+        this.type = "rect";
         this.dataMap = {};
 
         canvas.$el.append($el);
