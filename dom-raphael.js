@@ -324,6 +324,20 @@
         }
     });
 
+	var Path = function(canvas, pathString) {
+		// dummy implementation of path
+        var transformMatrix = this.transformMatrix = calculateTransformMatrix(0, 0, 1, 1);
+        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
+        this.id = nextElemId++;
+        this.canvas = canvas;
+        this.type = "rect";
+        this.dataMap = {};
+
+        canvas.$el.append($el);
+        canvas.elements.push(this);
+	};
+	Path.prototype = elementFunctions;
+
     //Rectangle class contructor..
     var Rect = function (canvas, x, y, width, height) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
@@ -417,6 +431,10 @@
         text: function (x, y, text) {
             return new Text(this, x, y, text);
         },
+
+		path: function(pathString) {
+			return new Path(this, pathString);
+		},
 
         rect: function (x, y, width, height) {
             return new Rect(this, x, y, width, height);
