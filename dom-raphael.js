@@ -176,7 +176,15 @@
             dataMap[key] = value;
             return this;
         },
-        
+
+		drag: function(onmove, onstart, onend, mcontext, scontext, econtext) {
+			return this;
+		},
+
+		toFront: function() {
+			return this;
+		},
+
         //Obtains an array of values for the requested SVG attributes.
         //Note: currently only supports pixel values.
         _getSVGAttrs: function (attrsToGet) {
