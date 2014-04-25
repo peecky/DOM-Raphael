@@ -433,6 +433,11 @@
 
     //Constructs a new canvas using the given element..
     var DOMRaphael = function (el, width, height) {
+		for (var k in DOMRaphael.fn) {
+			if (typeof Canvas.prototype[k] === 'undefined') {
+				Canvas.prototype[k] = DOMRaphael.fn[k];
+			}
+		}
         return new Canvas(el, width, height);
     };
     
@@ -456,6 +461,8 @@
         }
         return true;
     };
-    
+
+	DOMRaphael.fn = {};
+
     return DOMRaphael;
 });
