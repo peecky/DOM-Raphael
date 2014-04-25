@@ -352,6 +352,20 @@
     };
     Rect.prototype = elementFunctions;
 
+    var Circle = function (canvas, x, y, r) {
+		// dummy implementation of circle
+        var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, r, r);
+        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
+        this.id = nextElemId++;
+        this.canvas = canvas;
+        this.type = "circle";
+        this.dataMap = {};
+
+        canvas.$el.append($el);
+        canvas.elements.push(this);
+    };
+    Circle.prototype = elementFunctions;
+
 	var Image = function(canvas, src, x, y, width, height) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
         var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
@@ -439,6 +453,10 @@
         rect: function (x, y, width, height) {
             return new Rect(this, x, y, width, height);
         },
+
+		circle: function(x, y, r) {
+			return new Circle(this, x, y, r);
+		},
 
 		image: function(src, x, y, width, height) {
 			return new Image(this, src, x, y, width, height);
