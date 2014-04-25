@@ -377,6 +377,7 @@
 
     //Constructor for the canvas class which makes use of the given DOM element..
     var Canvas = function (el, width, height) {
+		if (typeof el === 'string') el = '#' + el;
         var $el = this.$el = $(el);
         this.elements = new Set(); 
 
