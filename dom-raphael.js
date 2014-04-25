@@ -32,8 +32,9 @@
             position: "absolute",
             top: "0px",
             left: "0px",
-            width: setDimensions ? "1px" : "",
-            height: setDimensions ? "1px" : "",
+			'box-sizing': 'border-box',
+            width: setDimensions ? "2px" : "",
+            height: setDimensions ? "2px" : "",
             webkitTransformOrigin: "0 0",
             webkitTransform: "" + transformMatrix
         });
@@ -44,7 +45,7 @@
     function calculateTransformMatrix(x, y, width, height) {
         width = typeof width === "undefined" ? 1 : width;
         height = typeof height === "undefined" ? 1 : height;
-        return new WebKitCSSMatrix().translate(x, y).scale(width, height);
+        return new WebKitCSSMatrix().translate(x, y).scale(width/2, height/2);
     }
 
     function bindToTransitionEndForSingleRun($el, funcToExec, maxMSTillTransitionEnd) {
@@ -354,12 +355,16 @@
 
     var Circle = function (canvas, x, y, r) {
 		// dummy implementation of circle
-        var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, r, r);
+        var transformMatrix = this.transformMatrix = calculateTransformMatrix(x-r, y-r, r*2, r*2);
         var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
         this.id = nextElemId++;
         this.canvas = canvas;
         this.type = "circle";
         this.dataMap = {};
+		$el.css({
+			'border-radius': '50%',
+			'border-width': '1px'
+		});
 
         canvas.$el.append($el);
         canvas.elements.push(this);
@@ -376,7 +381,7 @@
 		$el.css({
 			'background-image': 'url(' + src + ')',
 			'background-repeat': 'no-repeat',
-			'background-size': '1px 1px'
+			'background-size': '2px 2px'
 		});
 
         canvas.$el.append($el);
