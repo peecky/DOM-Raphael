@@ -337,6 +337,24 @@
         canvas.elements.push(this);
     };
     Rect.prototype = elementFunctions;
+
+	var Image = function(canvas, src, x, y, width, height) {
+        var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
+        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
+        this.id = nextElemId++;
+        this.canvas = canvas;
+        this.type = "image";
+        this.dataMap = {};
+		$el.css({
+			'background-image': 'url(' + src + ')',
+			'background-repeat': 'no-repeat',
+			'background-size': '1px 1px'
+		});
+
+        canvas.$el.append($el);
+        canvas.elements.push(this);
+	};
+    Image.prototype = elementFunctions;
  
     //Set class like Raphael's - for combining elements..
     var Set = function () {
@@ -403,7 +421,11 @@
         rect: function (x, y, width, height) {
             return new Rect(this, x, y, width, height);
         },
-        
+
+		image: function(src, x, y, width, height) {
+			return new Image(this, src, x, y, width, height);
+		},
+
         set: function () {
             return new Set();
         }
