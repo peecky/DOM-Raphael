@@ -195,7 +195,9 @@
 	        this.canvas = canvas;
 	        this.type = type;
 	        this.dataMap = {};
-			this.attrs = {};
+			this.attrs = {
+				r: 0
+			};
 			this.matrix = transformMatrix;
 			this.matrix.toTransformString = function() {
 				return this.toString();	// dummy implementation
@@ -288,6 +290,12 @@
                     //don't allow zero as a valid value as it causes issues..
                     css.opacity = value === 0 ? opacityEpsilon : value;
                     break;
+				case 'cx':
+					getTransformMatrix().e = 2 * (value - self.attrs.r);
+					break;
+				case 'cy':
+					getTransformMatrix().f = 2 * (value - self.attrs.r);
+					break;
                 default:
                     css[attr] = value;
                 }
@@ -373,6 +381,9 @@
     var Circle = function (canvas, x, y, r) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x-r, y-r, r*2, r*2);
 		this._initElement(canvas, transformMatrix, 'circle');
+		this.attrs.r = r;
+		this.attrs.cx = x;
+		this.attrs.cy = y;
 		this.$el.css({
 			'border-radius': '50%',
 			'border-width': '1px'
