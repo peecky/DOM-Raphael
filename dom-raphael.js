@@ -192,6 +192,10 @@
 	        this.type = type;
 	        this.dataMap = {};
 			this.attrs = {};
+			this.matrix = transformMatrix;
+			this.matrix.toTransformString = function() {
+				return this.toString();	// dummy implementation
+			};
 
 	        canvas.$el.append($el);
 	        canvas.elements.push(this);
