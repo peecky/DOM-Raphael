@@ -185,6 +185,18 @@
 			return this;
 		},
 
+		_initElement: function(canvas, transformMatrix, type) {
+	        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
+	        this.id = nextElemId++;
+	        this.canvas = canvas;
+	        this.type = type;
+	        this.dataMap = {};
+			this.attrs = {};
+
+	        canvas.$el.append($el);
+	        canvas.elements.push(this);
+		},
+
         //Obtains an array of values for the requested SVG attributes.
         //Note: currently only supports pixel values.
         _getSVGAttrs: function (attrsToGet) {
@@ -291,18 +303,6 @@
 
     };
 
-	var _initElement = function(canvas, that, transformMatrix, type) {
-        var $el = that.$el = createNewAbs$AtPos(transformMatrix, true);
-        that.id = nextElemId++;
-        that.canvas = canvas;
-        that.type = type;
-        that.dataMap = {};
-		that.attrs = {};
-
-        canvas.$el.append($el);
-        canvas.elements.push(that);
-	};
-
     //Text class constructor..
     var Text = function (canvas, x, y, text) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y);
@@ -351,20 +351,20 @@
 	var Path = function(canvas, pathString) {
 		// dummy implementation of path
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(0, 0, 1, 1);
-		_initElement(canvas, this, transformMatrix, 'path');
+		this._initElement(canvas, transformMatrix, 'path');
 	};
 	Path.prototype = elementFunctions;
 
     //Rectangle class contructor..
     var Rect = function (canvas, x, y, width, height) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
-		_initElement(canvas, this, transformMatrix, 'rect');
+		this._initElement(canvas, transformMatrix, 'rect');
     };
     Rect.prototype = elementFunctions;
 
     var Circle = function (canvas, x, y, r) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x-r, y-r, r*2, r*2);
-		_initElement(canvas, this, transformMatrix, 'circle');
+		this._initElement(canvas, transformMatrix, 'circle');
 		this.$el.css({
 			'border-radius': '50%',
 			'border-width': '1px'
@@ -374,7 +374,7 @@
 
 	var Image = function(canvas, src, x, y, width, height) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
-		_initElement(canvas, this, transformMatrix, 'image');
+		this._initElement(canvas, transformMatrix, 'image');
 		this.$el.css({
 			'background-image': 'url(' + src + ')',
 			'background-repeat': 'no-repeat',
