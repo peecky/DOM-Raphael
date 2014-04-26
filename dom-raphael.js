@@ -181,6 +181,10 @@
 			return this;
 		},
 
+		undrag: function() {
+			return this;
+		},
+
 		toFront: function() {
 			return this;
 		},
