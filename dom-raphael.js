@@ -224,10 +224,10 @@
                     attrs.push(transformMatrix.f);
                     break;
                 case "width":
-                    attrs.push(transformMatrix.a);
+                    attrs.push(2 * transformMatrix.a);
                     break;
                 case "height":
-                    attrs.push(transformMatrix.d);
+                    attrs.push(2 * transformMatrix.d);
                     break;
                 case "fill":
                     attrs.push(elStyle[self.type === "text" ? "color" : "background-color"]);
@@ -272,10 +272,10 @@
                     getTransformMatrix().f = value;
                     break;
                 case "width":
-                    getTransformMatrix().a = value;
+                    getTransformMatrix().a = value / 2;
                     break;
                 case "height":
-                    getTransformMatrix().d = value;
+                    getTransformMatrix().d = value / 2;
                     break;
                 case "fill":
                     css[self.type === "text" ? "color" : "background-color"] = value;
@@ -291,10 +291,10 @@
                     css.opacity = value === 0 ? opacityEpsilon : value;
                     break;
 				case 'cx':
-					getTransformMatrix().e = 2 * (value - self.attrs.r);
+					getTransformMatrix().e = 1 * (value - self.attrs.r);
 					break;
 				case 'cy':
-					getTransformMatrix().f = 2 * (value - self.attrs.r);
+					getTransformMatrix().f = 1 * (value - self.attrs.r);
 					break;
                 default:
                     css[attr] = value;
