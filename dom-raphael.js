@@ -178,10 +178,52 @@
         },
 
 		drag: function(onmove, onstart, onend, mcontext, scontext, econtext) {
+			var this_ = this;
+			var mousedownHandlers = this.eventHandlers.mousedown;
+			var mousemoveHandlers = this.eventHandlers.mousemove;
+			var mouseupHandlers = this.eventHandlers.mouseup;
+
+			mousedownHandlers.push(onstart);
+			mousemoveHandlers.push(onmove);
+			mouseupHandlers.push(onend);
+
+			this.$el.mousedown(function(e) {
+				var offset = this_.canvas.$el.offset();
+				var x = e.pageX - offset.left;
+				var y = e.pageY - offset.top;
+				$(this).data('dragStartFrom', { x: x, y: y });
+				for (var i = 0; i < mousedownHandlers.length; i++) {
+					mousedownHandlers[i].bind(this_)(x, y, e);
+				}
+			});
+			this.$el.mousemove(function(e) {
+				var dragStartFrom = $(this).data('dragStartFrom');
+				if (!dragStartFrom) return;
+				var offset = this_.canvas.$el.offset();
+				var x = e.pageX - offset.left;
+				var y = e.pageY - offset.top;
+				var dx = x - dragStartFrom.x;
+				var dy = y - dragStartFrom.y;
+				for (var i = 0; i < mousemoveHandlers.length; i++) {
+					mousemoveHandlers[i].bind(this_)(dx, dy, x, y, e);
+				}
+			});
+			this.$el.mouseup(function(e) {
+				for (var i = 0; i < mouseupHandlers.length; i++) {
+					mouseupHandlers[i].bind(this_)(e);
+				}
+				$(this).removeData('dragStartFrom');
+			});
 			return this;
 		},
 
 		undrag: function() {
+			this.eventHandlers.mousemove = [];
+			this.eventHandlers.mousedown = [];
+			this.eventHandlers.mouseup = [];
+			this.$el.off('mousedown');
+			this.$el.off('mousemove');
+			this.$el.off('mouseup');
 			return this;
 		},
 
@@ -199,6 +241,11 @@
 	        this.canvas = canvas;
 	        this.type = type;
 	        this.dataMap = {};
+			this.eventHandlers = {
+				mousedown: [],
+				mousemove: [],
+				mouseup: []
+			};
 			this.attrs = {
 				r: 0
 			};
