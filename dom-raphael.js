@@ -189,6 +189,10 @@
 			return this;
 		},
 
+		transform: function(tstr) {
+			return this;
+		},
+
 		_initElement: function(canvas, transformMatrix, type) {
 	        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
 	        this.id = nextElemId++;
