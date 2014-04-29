@@ -49,9 +49,11 @@
 			var cx = opts.width * opts.sx / 2;
 			var cy = opts.height * opts.sy / 2;
 			return new WebKitCSSMatrix()
-				.translate(opts.width * (1 - opts.sx) / 2, opts.height * (1 - opts.sy) / 2)
-				.translate(opts.x, opts.y)
-				.translate(cx, cy)
+				////.translate(opts.width * (1 - opts.sx) / 2, opts.height * (1 - opts.sy) / 2)
+				//.translate(opts.width / 2 - cx, opts.height / 2 - cy)
+				//.translate(opts.x, opts.y)
+				//.translate(cx, cy)
+				.translate(opts.width / 2 + opts.x, opts.height / 2 + opts.y)
 				.rotate(opts.deg)
 				.translate(-cx, -cy)
 				.scale(opts.width * opts.sx / 2, opts.height * opts.sy / 2)
