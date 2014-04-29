@@ -557,6 +557,7 @@
     var Canvas = function (el, width, height) {
 		if (typeof el === 'string') el = '#' + el;
         var $el = this.$el = $(el);
+		this.canvas = $el[0];
         this.elements = new Set(); 
 		this.draggingElements = [];
 		var canvas = this;
