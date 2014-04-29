@@ -205,16 +205,34 @@
 			mousemoveHandlers.push(onmove);
 			mouseupHandlers.push(onend);
 
-			this.$el.mousedown(function(e) {
+			function onDragStart(e) {
+				var $this = $(this);
+				if ($this.data('dragStartFrom')) return; // already handled
+
+				e.preventDefault();
+				e.stopPropagation();
+				var x, y;
+				if (e.type === 'touchstart') {
+					var touch = e.originalEvent.touches[0];
+					x = touch.pageX;
+					y = touch.pageY;
+				}
+				else {
+					x = e.pageX;
+					y = e.pageY;
+				}
 				var offset = element.canvas.$el.offset();
-				var x = e.pageX - offset.left;
-				var y = e.pageY - offset.top;
-				$(this).data('dragStartFrom', { x: x, y: y });
+				x -= offset.left;
+				y -= offset.top;
+				$this.data('dragStartFrom', { x: x, y: y });
 				for (var i = 0; i < mousedownHandlers.length; i++) {
 					mousedownHandlers[i].bind(element)(x, y, e);
 				}
 				element.canvas.draggingElements.push(element);
-			});
+			}
+
+			this.$el.mousedown(onDragStart);
+			this.$el.on('touchstart', onDragStart);
 			return this;
 		},
 
@@ -569,25 +587,42 @@
             overflow: "hidden"
         });
 
-		var $document = $(document);
-		$document.mousemove(function(e) {
+		function onMouseMove(e) {
+			if (canvas.draggingElements.length === 0) return;
+
+			e.preventDefault();
+			e.stopPropagation();
+			var x, y;
+			if (e.type === 'touchmove') {
+				var touch = e.originalEvent.touches[0];
+				x = touch.pageX;
+				y = touch.pageY;
+			}
+			else {
+				x = e.pageX;
+				y = e.pageY;
+			}
+
+			var offset = canvas.$el.offset();
+			x -= offset.left;
+			y -= offset.top;
 			for (var i = 0; i < canvas.draggingElements.length; i++) {
 				var element = canvas.draggingElements[i];
 				var dragStartFrom = element.$el.data('dragStartFrom');
-				if (!dragStartFrom) return;
+				if (!dragStartFrom) continue;
 
 				var mousemoveHandlers = element.eventHandlers.mousemove;
-				var offset = canvas.$el.offset();
-				var x = e.pageX - offset.left;
-				var y = e.pageY - offset.top;
 				var dx = x - dragStartFrom.x;
 				var dy = y - dragStartFrom.y;
 				for (var j = 0; j < mousemoveHandlers.length; j++) {
 					mousemoveHandlers[j].bind(element)(dx, dy, x, y, e);
 				}
 			}
-		});
-		$document.mouseup(function(e) {
+		}
+
+		function onMouseUp(e) {
+			if (canvas.draggingElements.length === 0) return;
+
 			for (var i = 0; i < canvas.draggingElements.length; i++) {
 				var element = canvas.draggingElements[i];
 				var mouseupHandlers = element.eventHandlers.mouseup;
@@ -597,7 +632,14 @@
 				element.$el.removeData('dragStartFrom');
 			}
 			canvas.draggingElements = [];
-		});
+		}
+
+		var $document = $(document);
+		$document.mousemove(onMouseMove);
+		$document.on('touchmove', onMouseMove);
+		$document.mouseup(onMouseUp);
+		$document.on('touchend', onMouseUp);
+		$document.on('touchcancel', onMouseUp);
     };
     Canvas.prototype = {
     
