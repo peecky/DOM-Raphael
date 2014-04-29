@@ -43,9 +43,25 @@
     //Calculates and returns the transform matrix of the given DOM element, which should be attached
     //to the DOM at the time of calculation.
     function calculateTransformMatrix(x, y, width, height) {
-        width = typeof width === "undefined" ? 1 : width;
-        height = typeof height === "undefined" ? 1 : height;
-        return new WebKitCSSMatrix().translate(x, y).scale(width/2, height/2);
+		if (typeof arguments[0] === 'object') {
+			var defaultOpts = { x: 0, y: 0, width: 2, height: 2, deg: 0, rcx: 0, rcy: 0, sx: 1, sy: 1 };
+			var opts = $.extend({}, defaultOpts, arguments[0]);
+			var cx = opts.width * opts.sx / 2;
+			var cy = opts.height * opts.sy / 2;
+			return new WebKitCSSMatrix()
+				.translate(opts.width * (1 - opts.sx) / 2, opts.height * (1 - opts.sy) / 2)
+				.translate(opts.x, opts.y)
+				.translate(cx, cy)
+				.rotate(opts.deg)
+				.translate(-cx, -cy)
+				.scale(opts.width * opts.sx / 2, opts.height * opts.sy / 2)
+				;
+		}
+		else {
+	        width = typeof width === "undefined" ? 1 : width;
+	        height = typeof height === "undefined" ? 1 : height;
+	        return new WebKitCSSMatrix().translate(x, y).scale(width/2, height/2);
+		}
     }
 
     function bindToTransitionEndForSingleRun($el, funcToExec, maxMSTillTransitionEnd) {
@@ -232,6 +248,66 @@
 		},
 
 		transform: function(tstr) {
+			var paramLength = {
+				't': 2, 'T': 2,
+				'r': 3, 'R': 3,
+				's': 4, 'S': 4
+			};
+			var regEx = /([tsr])|,?([+-]?\d*(\.\d*(e-\d+)?)?)/gi;
+			var match;
+			var op, params;
+			var x = this.attrs.x;
+			var y = this.attrs.y;
+			var width = this.attrs.width;
+			var height = this.attrs.height;
+			var dx, dy;
+			var sx, sy, scx, scy;
+			var deg, rcx, rcy;
+			while ((match = regEx.exec(tstr))) {
+				if (!match[0]) break;
+				if (match[0] === ',') continue;
+				if (match[1]) {
+					op = match[1];
+					params = [];
+				}
+				else {
+					params.push(parseFloat(match[2]));
+					if (paramLength[op] === params.length) {
+						switch (op) {
+							case 'T': {
+								dx = params[0];
+								dy = params[1];
+							}
+							break;
+
+							case 'S': {
+								sx = params[0];
+								sy = params[1];
+								scx = params[2];
+								scy = params[3];
+							}
+							break;
+
+							case 'R': {
+								deg = params[0];
+								rcx = params[1];
+								rcy = params[2];
+							}
+							break;
+						}
+					}
+				}
+			}
+
+			var transformMatrix = calculateTransformMatrix({
+				x: x + dx, y: y + dy,
+				width: width, height: height,
+				deg: deg, rcx: width / 2, rcy: height / 2,
+				sx: sx, sy: sy
+			});
+			this.$el.css({ '-webkitTransform': "" + transformMatrix });
+			this.transformMatrix = this.matrix = transformMatrix;
+			
 			return this;
 		},
 
@@ -251,7 +327,7 @@
 			};
 			this.matrix = transformMatrix;
 			this.matrix.toTransformString = function() {
-				return this.toString();	// dummy implementation
+				return '';	// dummy implementation
 			};
 
 	        canvas.$el.append($el);
@@ -361,7 +437,7 @@
             if (setValues) {
                 $el.css(css);
                 if (transformMatrix) {
-                    this.transformMatrix = transformMatrix;
+                    this.matrix = this.transformMatrix = transformMatrix;
                 }
                 return this;
             }
@@ -445,6 +521,10 @@
 	var Image = function(canvas, src, x, y, width, height) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
 		this._initElement(canvas, transformMatrix, 'image');
+		this.attrs.x = x;
+		this.attrs.y = y;
+		this.attrs.width = width;
+		this.attrs.height = height;
 		this.$el.css({
 			'background-image': 'url(' + src + ')',
 			'background-repeat': 'no-repeat',
