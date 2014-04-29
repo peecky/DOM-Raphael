@@ -196,7 +196,7 @@
         },
 
 		drag: function(onmove, onstart, onend, mcontext, scontext, econtext) {
-			var this_ = this;
+			var element = this;
 			var mousedownHandlers = this.eventHandlers.mousedown;
 			var mousemoveHandlers = this.eventHandlers.mousemove;
 			var mouseupHandlers = this.eventHandlers.mouseup;
@@ -206,31 +206,14 @@
 			mouseupHandlers.push(onend);
 
 			this.$el.mousedown(function(e) {
-				var offset = this_.canvas.$el.offset();
+				var offset = element.canvas.$el.offset();
 				var x = e.pageX - offset.left;
 				var y = e.pageY - offset.top;
 				$(this).data('dragStartFrom', { x: x, y: y });
 				for (var i = 0; i < mousedownHandlers.length; i++) {
-					mousedownHandlers[i].bind(this_)(x, y, e);
+					mousedownHandlers[i].bind(element)(x, y, e);
 				}
-			});
-			this.$el.mousemove(function(e) {
-				var dragStartFrom = $(this).data('dragStartFrom');
-				if (!dragStartFrom) return;
-				var offset = this_.canvas.$el.offset();
-				var x = e.pageX - offset.left;
-				var y = e.pageY - offset.top;
-				var dx = x - dragStartFrom.x;
-				var dy = y - dragStartFrom.y;
-				for (var i = 0; i < mousemoveHandlers.length; i++) {
-					mousemoveHandlers[i].bind(this_)(dx, dy, x, y, e);
-				}
-			});
-			this.$el.mouseup(function(e) {
-				for (var i = 0; i < mouseupHandlers.length; i++) {
-					mouseupHandlers[i].bind(this_)(e);
-				}
-				$(this).removeData('dragStartFrom');
+				element.canvas.draggingElements.push(element);
 			});
 			return this;
 		},
@@ -240,8 +223,6 @@
 			this.eventHandlers.mousedown = [];
 			this.eventHandlers.mouseup = [];
 			this.$el.off('mousedown');
-			this.$el.off('mousemove');
-			this.$el.off('mouseup');
 			return this;
 		},
 
@@ -577,6 +558,8 @@
 		if (typeof el === 'string') el = '#' + el;
         var $el = this.$el = $(el);
         this.elements = new Set(); 
+		this.draggingElements = [];
+		var canvas = this;
 
         $el.css({
             position: "relative",
@@ -584,6 +567,36 @@
             height: height + "px",
             overflow: "hidden"
         });
+
+		var $document = $(document);
+		$document.mousemove(function(e) {
+			for (var i = 0; i < canvas.draggingElements.length; i++) {
+				var element = canvas.draggingElements[i];
+				var dragStartFrom = element.$el.data('dragStartFrom');
+				if (!dragStartFrom) return;
+
+				var mousemoveHandlers = element.eventHandlers.mousemove;
+				var offset = canvas.$el.offset();
+				var x = e.pageX - offset.left;
+				var y = e.pageY - offset.top;
+				var dx = x - dragStartFrom.x;
+				var dy = y - dragStartFrom.y;
+				for (var j = 0; j < mousemoveHandlers.length; j++) {
+					mousemoveHandlers[j].bind(element)(dx, dy, x, y, e);
+				}
+			}
+		});
+		$document.mouseup(function(e) {
+			for (var i = 0; i < canvas.draggingElements.length; i++) {
+				var element = canvas.draggingElements[i];
+				var mouseupHandlers = element.eventHandlers.mouseup;
+				for (var j = 0; j < mouseupHandlers.length; j++) {
+					mouseupHandlers[j].bind(element)(e);
+				}
+				element.$el.removeData('dragStartFrom');
+			}
+			canvas.draggingElements = [];
+		});
     };
     Canvas.prototype = {
     
