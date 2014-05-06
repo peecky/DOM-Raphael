@@ -127,7 +127,17 @@
             //single getter..
             return this._getSVGAttrs([arg0])[0];
         },
-        
+
+		hide: function() {
+			this.$el.hide();
+			return this;
+		},
+
+		show: function() {
+			this.$el.show();
+			return this;
+		},
+
         //Removes this element from the DOM..
         remove: function () {
             this.$el.remove();
