@@ -205,52 +205,82 @@
             return this;
         },
 
-		drag: function(onmove, onstart, onend, mcontext, scontext, econtext) {
+		mousedown: function(handler) {
 			var element = this;
 			var mousedownHandlers = this.eventHandlers.mousedown;
-			var mousemoveHandlers = this.eventHandlers.mousemove;
-			var mouseupHandlers = this.eventHandlers.mouseup;
+			mousedownHandlers.push(handler);
+
+			if (!this._mousedown) {
+				this._mousedown = function(e) {
+					for (var i = 0; i < mousedownHandlers.length; i++) {
+						mousedownHandlers[i].call(element);
+					}
+				};
+				this.$el.on('mousedown', this._mousedown);
+			}
+			return this;
+		},
+
+		unmousedown: function(handler) {
+			if (this._mousedown) {
+				this.eventHandlers.mousedown = [];
+				this.$el.off('mousedown', this._mousedown);
+				this._mousedown = null;
+			}
+			return this;
+		},
+
+		drag: function(onmove, onstart, onend, mcontext, scontext, econtext) {
+			var element = this;
+			var mousedownHandlers = this.eventHandlers.dragMousedown;
+			var mousemoveHandlers = this.eventHandlers.dragMousemove;
+			var mouseupHandlers = this.eventHandlers.dragMouseup;
 
 			mousedownHandlers.push(onstart);
 			mousemoveHandlers.push(onmove);
 			mouseupHandlers.push(onend);
 
-			function onDragStart(e) {
-				var $this = $(this);
-				if ($this.data('dragStartFrom')) return; // already handled
+			if (!this._onDragStart) {
+				this._onDragStart = function(e) {
+					var $this = $(this);
+					if ($this.data('dragStartFrom')) return; // already handled
 
-				e.preventDefault();
-				e.stopPropagation();
-				var x, y;
-				if (e.type === 'touchstart') {
-					var touch = e.originalEvent.touches[0];
-					x = touch.pageX;
-					y = touch.pageY;
-				}
-				else {
-					x = e.pageX;
-					y = e.pageY;
-				}
-				var offset = element.canvas.$el.offset();
-				x -= offset.left;
-				y -= offset.top;
-				$this.data('dragStartFrom', { x: x, y: y });
-				for (var i = 0; i < mousedownHandlers.length; i++) {
-					mousedownHandlers[i].call(element, x, y, e);
-				}
-				element.canvas.draggingElements.push(element);
+					e.preventDefault();
+					e.stopPropagation();
+					var x, y;
+					if (e.type === 'touchstart') {
+						var touch = e.originalEvent.touches[0];
+						x = touch.pageX;
+						y = touch.pageY;
+					}
+					else {
+						x = e.pageX;
+						y = e.pageY;
+					}
+					var offset = element.canvas.$el.offset();
+					x -= offset.left;
+					y -= offset.top;
+					$this.data('dragStartFrom', { x: x, y: y });
+					for (var i = 0; i < mousedownHandlers.length; i++) {
+						mousedownHandlers[i].call(element, x, y, e);
+					}
+					element.canvas.draggingElements.push(element);
+				};
+
+				this.$el.mousedown(this._onDragStart);
+				this.$el.on('touchstart', this._onDragStart);
 			}
-
-			this.$el.mousedown(onDragStart);
-			this.$el.on('touchstart', onDragStart);
 			return this;
 		},
 
 		undrag: function() {
-			this.eventHandlers.mousemove = [];
-			this.eventHandlers.mousedown = [];
-			this.eventHandlers.mouseup = [];
-			this.$el.off('mousedown');
+			if (this._onDragStart) {
+				this.eventHandlers.dragMousemove = [];
+				this.eventHandlers.dragMousedown = [];
+				this.eventHandlers.dragMouseup = [];
+				this.$el.off('mousedown', this._onDragStart);
+				this._onDragStart = null;
+			}
 			return this;
 		},
 
@@ -330,9 +360,12 @@
 	        this.dataMap = {};
 			this.eventHandlers = {
 				mousedown: [],
-				mousemove: [],
-				mouseup: []
+				dragMousedown: [],
+				dragMousemove: [],
+				dragMouseup: []
 			};
+			this._mousedown = null;
+			this._onDragStart = null;
 			this.attrs = {
 				r: 0
 			};
@@ -621,7 +654,7 @@
 				var dragStartFrom = element.$el.data('dragStartFrom');
 				if (!dragStartFrom) continue;
 
-				var mousemoveHandlers = element.eventHandlers.mousemove;
+				var mousemoveHandlers = element.eventHandlers.dragMousemove;
 				var dx = x - dragStartFrom.x;
 				var dy = y - dragStartFrom.y;
 				for (var j = 0; j < mousemoveHandlers.length; j++) {
@@ -635,7 +668,7 @@
 
 			for (var i = 0; i < canvas.draggingElements.length; i++) {
 				var element = canvas.draggingElements[i];
-				var mouseupHandlers = element.eventHandlers.mouseup;
+				var mouseupHandlers = element.eventHandlers.dragMouseup;
 				for (var j = 0; j < mouseupHandlers.length; j++) {
 					mouseupHandlers[j].call(element, e);
 				}
