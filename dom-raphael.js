@@ -226,7 +226,7 @@
 				y -= offset.top;
 				$this.data('dragStartFrom', { x: x, y: y });
 				for (var i = 0; i < mousedownHandlers.length; i++) {
-					mousedownHandlers[i].bind(element)(x, y, e);
+					mousedownHandlers[i].call(element, x, y, e);
 				}
 				element.canvas.draggingElements.push(element);
 			}
@@ -615,7 +615,7 @@
 				var dx = x - dragStartFrom.x;
 				var dy = y - dragStartFrom.y;
 				for (var j = 0; j < mousemoveHandlers.length; j++) {
-					mousemoveHandlers[j].bind(element)(dx, dy, x, y, e);
+					mousemoveHandlers[j].call(element, dx, dy, x, y, e);
 				}
 			}
 		}
@@ -627,7 +627,7 @@
 				var element = canvas.draggingElements[i];
 				var mouseupHandlers = element.eventHandlers.mouseup;
 				for (var j = 0; j < mouseupHandlers.length; j++) {
-					mouseupHandlers[j].bind(element)(e);
+					mouseupHandlers[j].call(element, e);
 				}
 				element.$el.removeData('dragStartFrom');
 			}
