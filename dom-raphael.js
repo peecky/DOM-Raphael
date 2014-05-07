@@ -27,6 +27,11 @@
 
 	var supportsTouch = ('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch; // taken from Modernizr touch test
 
+	if (typeof WebKitCSSMatrix.prototype.toTransformString === 'undefined')
+		WebKitCSSMatrix.prototype.toTransformString = function() {
+			return '';	// dummy implementation
+		};
+
     //Creates a new absolutely positioned jQuery obj using the given transform matrix and
     //optionally setting it dimensions to a 1px square..
     function createNewAbs$AtPos(transformMatrix, setDimensions) {
@@ -377,9 +382,6 @@
 				r: 0
 			};
 			this.matrix = transformMatrix;
-			this.matrix.toTransformString = function() {
-				return '';	// dummy implementation
-			};
 
 	        canvas.$el.append($el);
 	        canvas.elements.push(this);
