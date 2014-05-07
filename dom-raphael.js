@@ -437,6 +437,12 @@
                 $el = this.$el,
                 self = this,
                 transformMatrix;
+			var textAnchorToScore = {
+				start: 1,
+				middle: 0,
+				end: -1
+			};
+			var dx;
                 
             function getTransformMatrix() {
                 //clone a new copy if not done so..
@@ -476,11 +482,21 @@
 				case 'cy':
 					getTransformMatrix().f = 1 * (value - self.attrs.r);
 					break;
+				case 'text-anchor':
+					var oldTextAnchor = self.attrs['text-anchor'];
+					var moveScore = textAnchorToScore[value] - textAnchorToScore[oldTextAnchor];
+					if (moveScore != 0) {
+						dx = self.getBBox().width * moveScore / 2;
+						transformMatrix = calculateTransformMatrix(self.attrs.x+dx, self.attrs.y);
+					}
                 default:
                     css[attr] = value;
                 }
 				if (setValues) {
 					self.attrs[attr] = value;
+					if (dx) {
+						self.attrs.x += dx;
+					}
 				}
             });
 
@@ -507,6 +523,7 @@
 		this.attrs.y = y;
 		this.attrs.width = 2;
 		this.attrs.height = 2;
+		this.attrs['text-anchor'] = 'middle';
 		this.$el.css({ display: 'inline-block', width: 'auto', height: 'auto' });
 
         //Center text around point..
