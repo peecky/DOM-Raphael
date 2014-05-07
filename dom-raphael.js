@@ -576,6 +576,7 @@
 		this.attrs.y = y;
 		this.attrs.width = width;
 		this.attrs.height = height;
+		this.attrs.src = src;
 		this.$el.css({
 			'background-image': 'url(' + src + ')',
 			'background-repeat': 'no-repeat',
