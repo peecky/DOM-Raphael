@@ -25,6 +25,8 @@
 })(function ($) {
     "use strict";
 
+	var supportsTouch = ('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch; // taken from Modernizr touch test
+
     //Creates a new absolutely positioned jQuery obj using the given transform matrix and
     //optionally setting it dimensions to a 1px square..
     function createNewAbs$AtPos(transformMatrix, setDimensions) {
@@ -213,10 +215,11 @@
 			if (!this._mousedown) {
 				this._mousedown = function(e) {
 					for (var i = 0; i < mousedownHandlers.length; i++) {
-						mousedownHandlers[i].call(element);
+						mousedownHandlers[i].call(element, e);
 					}
 				};
-				this.$el.on('mousedown', this._mousedown);
+				if (supportsTouch) this.$el.on('touchstart', this._mousedown);
+				else this.$el.on('mousedown', this._mousedown);
 			}
 			return this;
 		},
@@ -245,8 +248,6 @@
 					var $this = $(this);
 					if ($this.data('dragStartFrom')) return; // already handled
 
-					e.preventDefault();
-					e.stopPropagation();
 					var x, y;
 					if (e.type === 'touchstart') {
 						var touch = e.originalEvent.touches[0];
@@ -267,8 +268,8 @@
 					element.canvas.draggingElements.push(element);
 				};
 
-				this.$el.mousedown(this._onDragStart);
-				this.$el.on('touchstart', this._onDragStart);
+				if (supportsTouch) this.$el.on('touchstart', this._onDragStart);
+				else this.$el.mousedown(this._onDragStart);
 			}
 			return this;
 		},
