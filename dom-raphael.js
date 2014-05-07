@@ -286,6 +286,12 @@
 		},
 
 		toFront: function() {
+			this.$el.detach().appendTo(this.canvas.$el);
+			return this;
+		},
+
+		toBack: function() {
+			this.$el.detach().prependTo(this.canvas.$el);
 			return this;
 		},
 
