@@ -62,8 +62,8 @@
 				;
 		}
 		else {
-	        width = typeof width === "undefined" ? 1 : width;
-	        height = typeof height === "undefined" ? 1 : height;
+	        width = typeof width === "undefined" ? 2 : width;
+	        height = typeof height === "undefined" ? 2 : height;
 	        return new WebKitCSSMatrix().translate(x, y).scale(width/2, height/2);
 		}
     }
@@ -500,18 +500,17 @@
     //Text class constructor..
     var Text = function (canvas, x, y, text) {
         var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y);
-        var $el = this.$el = createNewAbs$AtPos(transformMatrix, false);
-        this.id = nextElemId++;
-        this.canvas = canvas;
-        this.type = "text";
-        this.dataMap = {};
+		this._initElement(canvas, transformMatrix, 'text');
+		this.attrs.x = x;
+		this.attrs.y = y;
+		this.attrs.width = 2;
+		this.attrs.height = 2;
+		this.$el.css({ display: 'inline-block', width: 'auto', height: 'auto' });
 
         //Center text around point..
-        var textHolder = $('<div>').text(text).css("webkit-transform", "translate(-50%, -50%)");
-        $el.append(textHolder);
-
-        canvas.$el.append($el);
-        canvas.elements.push(this);
+        var textHolder = $('<div>').text(text).css("webkit-transform", "translate(-50%, -50%)")
+			.css({ 'white-space': 'pre', font: '10px "Arial"' });
+        this.$el.append(textHolder);
     };
     Text.prototype = $.extend({}, elementFunctions, {
 
