@@ -558,6 +558,7 @@
 		this.attrs.y = y;
 		this.attrs.width = 2;
 		this.attrs.height = 2;
+		this.attrs.text = text;
 		this.attrs['text-anchor'] = 'middle';
 		this.$el.css({ display: 'inline-block', width: 'auto', height: 'auto' });
 
