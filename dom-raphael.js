@@ -147,9 +147,18 @@
 
         //Removes this element from the DOM..
         remove: function () {
+			this._detach();
             this.$el.remove();
             this.canvas.elements.exclude(this);
         },
+
+		_detach: function() {
+			var canvas = this.canvas;
+			if (this.next) this.next.prev = this.prev;
+			else canvas.topElement = this.prev;
+			if (this.prev) this.prev.next = this.next;
+			else canvas.bottomElement = this.next;
+		},
 
         //Note: currently a rather basic impl and will only transition properties
         //which are known to be hardware acceleratable..
@@ -291,12 +300,30 @@
 		},
 
 		toFront: function() {
-			this.$el.detach().appendTo(this.canvas.$el);
+			var canvas = this.canvas;
+			if (canvas.topElement === this) return this;
+
+			this._detach();
+			this.next = null;
+			this.prev = canvas.topElement;
+			canvas.topElement.next = this;
+			canvas.topElement = this;
+
+			this.$el.detach().appendTo(canvas.$el);
 			return this;
 		},
 
 		toBack: function() {
-			this.$el.detach().prependTo(this.canvas.$el);
+			var canvas = this.canvas;
+			if (canvas.bottomElement === this) return this;
+
+			this._detach();
+			this.prev = null;
+			this.next = canvas.bottomElement;
+			canvas.bottomElement.prev = this;
+			canvas.bottomElement = this;
+
+			this.$el.detach().prependTo(canvas.$el);
 			return this;
 		},
 
@@ -385,6 +412,13 @@
 
 	        canvas.$el.append($el);
 	        canvas.elements.push(this);
+
+			var topElement = canvas.topElement;
+			if (topElement) topElement.next = this;
+			this.prev = topElement || null;
+			this.next = null;
+			canvas.topElement = this;
+			if (!canvas.bottomElement) canvas.bottomElement = this;
 		},
 
         //Obtains an array of values for the requested SVG attributes.
@@ -743,7 +777,9 @@
         },
 
 		remove: function() {
-			this.$el.empty();
+			this.elements.forEach(function (elem) {
+				elem.remove();
+			});
 		}
     };
 
