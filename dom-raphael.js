@@ -25,7 +25,7 @@
 })(function ($) {
     "use strict";
 
-	var supportsTouch = ('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch; // taken from Modernizr touch test
+	var supportsTouch = ('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch; // taken from Modernizr touch test
 
 	if (typeof WebKitCSSMatrix.prototype.toTransformString === 'undefined')
 		WebKitCSSMatrix.prototype.toTransformString = function() {
@@ -519,7 +519,7 @@
 				case 'text-anchor':
 					var oldTextAnchor = self.attrs['text-anchor'];
 					var moveScore = textAnchorToScore[value] - textAnchorToScore[oldTextAnchor];
-					if (moveScore != 0) {
+					if (moveScore !== 0) {
 						dx = self.getBBox().width * moveScore / 2;
 						transformMatrix = calculateTransformMatrix(self.attrs.x+dx, self.attrs.y);
 					}
