@@ -523,6 +523,7 @@
 						dx = self.getBBox().width * moveScore / 2;
 						transformMatrix = calculateTransformMatrix(self.attrs.x+dx, self.attrs.y);
 					}
+					break;
                 default:
                     css[attr] = value;
                 }
