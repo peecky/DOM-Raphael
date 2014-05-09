@@ -740,7 +740,11 @@
 
         set: function () {
             return new Set();
-        }
+        },
+
+		remove: function() {
+			this.$el.empty();
+		}
     };
 
     //Constructs a new canvas using the given element..
