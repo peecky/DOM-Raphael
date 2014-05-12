@@ -305,6 +305,10 @@
 			return this;
 		},
 
+		hover: function(f_in, f_out, icontext, ocontext) {
+			return this;
+		},
+
 		toFront: function() {
 			var canvas = this.canvas;
 			if (canvas.topElement === this) return this;
