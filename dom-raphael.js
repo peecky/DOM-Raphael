@@ -239,10 +239,15 @@
 		},
 
 		unmousedown: function(handler) {
-			if (this._mousedown) {
-				this.eventHandlers.mousedown = [];
-				this.$el.off('mousedown', this._mousedown);
-				this._mousedown = null;
+			var mousedownHandlers = this.eventHandlers.mousedown;
+			var pos = mousedownHandlers.indexOf(handler);
+			if (pos >= 0) {
+				mousedownHandlers.splice(pos, 1);
+				if (mousedownHandlers.length === 0 && this._mousedown) {
+					if (supportsTouch) this.$el.off('touchstart', this._mousedown);
+					else this.$el.off('mousedown', this._mousedown);
+					this._mousedown = null;
+				}
 			}
 			return this;
 		},
