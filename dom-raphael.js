@@ -428,6 +428,7 @@
 
 		_initElement: function(canvas, transformMatrix, type) {
 	        var $el = this.$el = createNewAbs$AtPos(transformMatrix, true);
+			this.node = $el.get(0);
 	        this.id = nextElemId++;
 	        this.canvas = canvas;
 	        this.type = type;
