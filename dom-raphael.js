@@ -333,6 +333,35 @@
 			return this;
 		},
 
+		insertAfter: function(siblingElement) {
+			if (this.prev === siblingElement) return this;
+
+			var canvas = this.canvas;
+			this._detach();
+			this.prev = siblingElement;
+			this.next = siblingElement.next;
+			siblingElement.next = this;
+			if (canvas.topElement === siblingElement) canvas.topElement = this;
+
+			this.$el.detach().insertAfter(siblingElement.$el);
+			return this;
+		},
+
+		insertBefore: function(siblingElement) {
+			console.log(siblingElement);
+			if (this.next === siblingElement) return this;
+
+			var canvas = this.canvas;
+			this._detach();
+			this.prev = siblingElement.prev;
+			this.next = siblingElement;
+			siblingElement.prev = this;
+			if (canvas.bottomElement === siblingElement) canvas.bottomElement = this;
+
+			this.$el.detach().insertBefore(siblingElement.$el);
+			return this;
+		},
+
 		transform: function(tstr) {
 			var paramLength = {
 				't': 2, 'T': 2,
