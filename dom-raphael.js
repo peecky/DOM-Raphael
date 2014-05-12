@@ -249,16 +249,17 @@
 
 		drag: function(onmove, onstart, onend, mcontext, scontext, econtext) {
 			var element = this;
-			var mousedownHandlers = this.eventHandlers.dragMousedown;
-			var mousemoveHandlers = this.eventHandlers.dragMousemove;
-			var mouseupHandlers = this.eventHandlers.dragMouseup;
+			mcontext = mcontext || element;
+			scontext = scontext || element;
+			econtext = econtext || element;
 
-			mousedownHandlers.push(onstart);
-			mousemoveHandlers.push(onmove);
-			mouseupHandlers.push(onend);
+			this.eventHandlers.dragMousedown.push({ handler: onstart, context: scontext });
+			this.eventHandlers.dragMousemove.push({ handler: onmove, context: mcontext });
+			this.eventHandlers.dragMouseup.push({ handler: onend, context: econtext });
 
 			if (!this._onDragStart) {
 				this._onDragStart = function(e) {
+					var mousedownHandlers = element.eventHandlers.dragMousedown;
 					var $this = $(this);
 					if ($this.data('dragStartFrom')) return; // already handled
 
@@ -277,7 +278,7 @@
 					y -= offset.top;
 					$this.data('dragStartFrom', { x: x, y: y });
 					for (var i = 0; i < mousedownHandlers.length; i++) {
-						mousedownHandlers[i].call(element, x, y, e);
+						mousedownHandlers[i].handler.call(mousedownHandlers[i].context, x, y, e);
 					}
 					element.canvas.draggingElements.push(element);
 				};
@@ -720,7 +721,7 @@
 				var dx = x - dragStartFrom.x;
 				var dy = y - dragStartFrom.y;
 				for (var j = 0; j < mousemoveHandlers.length; j++) {
-					mousemoveHandlers[j].call(element, dx, dy, x, y, e);
+					mousemoveHandlers[j].handler.call(mousemoveHandlers[j].context, dx, dy, x, y, e);
 				}
 			}
 		}
@@ -732,7 +733,7 @@
 				var element = canvas.draggingElements[i];
 				var mouseupHandlers = element.eventHandlers.dragMouseup;
 				for (var j = 0; j < mouseupHandlers.length; j++) {
-					mouseupHandlers[j].call(element, e);
+					mouseupHandlers[j].handler.call(mouseupHandlers[j].context, e);
 				}
 				element.$el.removeData('dragStartFrom');
 			}
