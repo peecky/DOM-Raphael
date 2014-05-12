@@ -354,7 +354,6 @@
 		},
 
 		insertBefore: function(siblingElement) {
-			console.log(siblingElement);
 			if (this.next === siblingElement) return this;
 
 			var canvas = this.canvas;
