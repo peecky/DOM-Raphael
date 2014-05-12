@@ -194,7 +194,9 @@
         },
         
         //Returns the "bounding box" for this element..
-        getBBox: function () {
+        getBBox: function (isWithoutTransform) {
+			if (isWithoutTransform) return this.originalBBox;
+
             var attrs = this._getSVGAttrs(["x", "y", "width", "height"]),
                 x = attrs[0],
                 y = attrs[1],
@@ -452,6 +454,7 @@
 
 	        canvas.$el.append($el);
 	        canvas.elements.push(this);
+			this.originalBBox = this.getBBox();
 
 			var topElement = canvas.topElement;
 			if (topElement) topElement.next = this;
@@ -564,8 +567,11 @@
 						var oldTextAnchor = self.attrs['text-anchor'];
 						var moveScore = textAnchorToScore[value] - textAnchorToScore[oldTextAnchor];
 						if (moveScore !== 0) {
-							dx = self.getBBox().width * moveScore / 2;
+							var bbox = self.getBBox();
+							dx = bbox.width * moveScore / 2;
 							transformMatrix = calculateTransformMatrix(self.attrs.x+dx, self.attrs.y);
+							self.originalBBox.x += dx;
+							self.originalBBox.x2 += dx;
 						}
 					}
 					break;
@@ -611,11 +617,14 @@
         var textHolder = $('<div>').text(text).css("webkit-transform", "translate(-50%, -50%)")
 			.css({ 'white-space': 'pre', font: '10px "Arial"' });
         this.$el.append(textHolder);
+		this.originalBBox = this.getBBox();
     };
     Text.prototype = $.extend({}, elementFunctions, {
 
         //need to recalc due to fact that top left isn't (x, y)..
-        getBBox: function () {
+        getBBox: function (isWithoutTransform) {
+			if (isWithoutTransform) return this.originalBBox;
+
             var bbox = elementFunctions.getBBox.apply(this, arguments),
                 halfWidth = bbox.width / 2, halfHeight = bbox.height / 2;
 
