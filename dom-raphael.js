@@ -556,12 +556,17 @@
 				case 'cy':
 					getTransformMatrix().f = 1 * (value - self.attrs.r);
 					break;
+				case 'text':
+					if (setValues) self.$el.find('div').text(value);
+					break;
 				case 'text-anchor':
-					var oldTextAnchor = self.attrs['text-anchor'];
-					var moveScore = textAnchorToScore[value] - textAnchorToScore[oldTextAnchor];
-					if (moveScore !== 0) {
-						dx = self.getBBox().width * moveScore / 2;
-						transformMatrix = calculateTransformMatrix(self.attrs.x+dx, self.attrs.y);
+					if (setValues) {
+						var oldTextAnchor = self.attrs['text-anchor'];
+						var moveScore = textAnchorToScore[value] - textAnchorToScore[oldTextAnchor];
+						if (moveScore !== 0) {
+							dx = self.getBBox().width * moveScore / 2;
+							transformMatrix = calculateTransformMatrix(self.attrs.x+dx, self.attrs.y);
+						}
 					}
 					break;
                 default:
