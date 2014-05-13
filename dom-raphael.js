@@ -498,7 +498,17 @@
                     var opacity = elStyle.opacity;
                     attrs.push(opacity === opacityEpsilon ? 0 : opacity);
                     break;
+				case 'src':
+					attrs.push(self.attrs.src);
+					break;
+				case 'text':
+					attrs.push(self.attrs.text);
+					break;
+				case 'font-family':
+					attrs.push(self.$el.find('div').css('font-family'));
+					break;
                 default:
+					console.error('unsupported attr: ' + attr + ': ' + elStyle[attr]);
                     attrs.push(elStyle[attr]);
                 }
             });
@@ -560,6 +570,7 @@
 					break;
 				case 'text':
 					if (setValues) self.$el.find('div').text(value);
+					else css.text = self.attrs.text;
 					break;
 				case 'text-anchor':
 					if (setValues) {
@@ -573,8 +584,20 @@
 							self.originalBBox.x2 += dx;
 						}
 					}
+					else css['text-anchor'] = self.attrs['text-anchor'];
+					break;
+				case 'stroke-dasharray':
+				case 'path':
+					// ignore
+					break;
+				case 'font-family':
+					if (setValues) {
+						$el.find('div').css('font-family', value);
+					}
+					else css['font-family'] = $el.find('div').css('font-family');
 					break;
                 default:
+					console.error('unsupported attr: ' + attr + ': ' + value);
                     css[attr] = value;
                 }
 				if (setValues) {
