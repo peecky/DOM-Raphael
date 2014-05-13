@@ -504,8 +504,11 @@
 				case 'text':
 					attrs.push(self.attrs.text);
 					break;
+				case 'font':
 				case 'font-family':
-					attrs.push(self.$el.find('div').css('font-family'));
+				case 'font-size':
+				case 'font-weight':
+					attrs.push(self.$el.find('div').css(attr));
 					break;
                 default:
 					console.error('unsupported attr: ' + attr + ': ' + elStyle[attr]);
@@ -590,11 +593,14 @@
 				case 'path':
 					// ignore
 					break;
+				case 'font':
 				case 'font-family':
+				case 'font-size':
+				case 'font-weight':
 					if (setValues) {
-						$el.find('div').css('font-family', value);
+						$el.find('div').css(attr, value);
 					}
-					else css['font-family'] = $el.find('div').css('font-family');
+					else css[attr] = $el.find('div').css('font-family');
 					break;
                 default:
 					console.error('unsupported attr: ' + attr + ': ' + value);
