@@ -98,7 +98,7 @@
 			y2: y2,
 			width: x2 - x,
 			height: y2 - y
-		}
+		};
 	}
 
     function bindToTransitionEndForSingleRun($el, funcToExec, maxMSTillTransitionEnd) {
@@ -464,7 +464,7 @@
 			this.attrs = {
 				r: 0
 			};
-			this.matrix = transformMatrix;
+			this.transformMatrix = this.matrix = transformMatrix;
 
 	        canvas.$el.append($el);
 	        canvas.elements.push(this);
@@ -550,7 +550,8 @@
                 
             function getTransformMatrix() {
                 //clone a new copy if not done so..
-                return transformMatrix = transformMatrix || new WebKitCSSMatrix(self.transformMatrix);
+                transformMatrix = transformMatrix || new WebKitCSSMatrix(self.transformMatrix);
+                return transformMatrix;
             }
 
             $.each(attrs, function (attr, value) {
@@ -646,7 +647,7 @@
 
     //Text class constructor..
     var Text = function (canvas, x, y, text) {
-        var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y);
+        var transformMatrix = calculateTransformMatrix(x, y);
 		this._initElement(canvas, transformMatrix, 'text');
 		this.attrs.x = x;
 		this.attrs.y = y;
@@ -695,20 +696,20 @@
 
 	var Path = function(canvas, pathString) {
 		// dummy implementation of path
-        var transformMatrix = this.transformMatrix = calculateTransformMatrix(0, 0, 1, 1);
+        var transformMatrix = calculateTransformMatrix(0, 0, 1, 1);
 		this._initElement(canvas, transformMatrix, 'path');
 	};
 	Path.prototype = elementFunctions;
 
     //Rectangle class contructor..
     var Rect = function (canvas, x, y, width, height) {
-        var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
+        var transformMatrix = calculateTransformMatrix(x, y, width, height);
 		this._initElement(canvas, transformMatrix, 'rect');
     };
     Rect.prototype = elementFunctions;
 
     var Circle = function (canvas, x, y, r) {
-        var transformMatrix = this.transformMatrix = calculateTransformMatrix(x-r, y-r, r*2, r*2);
+        var transformMatrix = calculateTransformMatrix(x-r, y-r, r*2, r*2);
 		this._initElement(canvas, transformMatrix, 'circle');
 		this.attrs.r = r;
 		this.attrs.cx = x;
@@ -721,7 +722,7 @@
     Circle.prototype = elementFunctions;
 
 	var Image = function(canvas, src, x, y, width, height) {
-        var transformMatrix = this.transformMatrix = calculateTransformMatrix(x, y, width, height);
+        var transformMatrix = calculateTransformMatrix(x, y, width, height);
 		this._initElement(canvas, transformMatrix, 'image');
 		this.attrs.x = x;
 		this.attrs.y = y;
