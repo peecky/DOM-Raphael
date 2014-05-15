@@ -61,7 +61,7 @@
 				//.translate(opts.x, opts.y)
 				//.translate(cx, cy)
 				.translate(opts.width / 2 + opts.x, opts.height / 2 + opts.y)
-				.rotate(opts.deg)
+				.rotate(0, 0, opts.deg)
 				.translate(-cx, -cy)
 				.scale(opts.width * opts.sx / 2, opts.height * opts.sy / 2)
 				;
@@ -72,6 +72,34 @@
 	        return new WebKitCSSMatrix().translate(x, y).scale(width/2, height/2);
 		}
     }
+
+	function calculateTransition(x, y, transformMatrix) {
+		var m = transformMatrix;
+		return [m.a*x + m.c*y + m.e, m.b*x + m.d*y + m.f];
+	}
+
+	function calculateBBox(originalX, originalY, originalX2, originalY2, transformMatrix) {
+		var x, y, x2, y2, xy;
+		xy = calculateTransition(originalX, originalY, transformMatrix);
+		x = x2 = xy[0];
+		y = y2 = xy[1];
+		var params = [originalX, originalY2, originalX2, originalY, originalX2, originalY2];
+		for (var i = 0; i < params.length; i += 2) {
+			xy = calculateTransition(params[i], params[i+1], transformMatrix);
+			if (x > xy[0]) x = xy[0];
+			else if (x2 < xy[0]) x2 = xy[0];
+			if (y > xy[1]) y = xy[1];
+			else if (y2 < xy[1]) y2 = xy[1];
+		}
+		return {
+			x: x,
+			y: y,
+			x2: x2,
+			y2: y2,
+			width: x2 - x,
+			height: y2 - y
+		}
+	}
 
     function bindToTransitionEndForSingleRun($el, funcToExec, maxMSTillTransitionEnd) {
 		var timeout, fired;
@@ -197,37 +225,7 @@
         getBBox: function (isWithoutTransform) {
 			if (isWithoutTransform) return this.originalBBox;
 
-			var x, x2, y, y2, x_, y_;
-			var m = this.transformMatrix;
-			for (var i = 0; i <= 2; i += 2) {
-				for (var j = 0; j <= 2; j +=2) {
-					x_ = m.a*i + m.c*j + m.e;
-					y_ = m.b*i + m.d*j + m.f;
-					if (typeof x === 'undefined') {
-						x = x2 = x_;
-					}
-					else {
-						if (x > x_) x = x_;
-						else if (x2 < x_) x2 = x_;
-					}
-					if (typeof y === 'undefined') {
-						y = y2 = y_;
-					}
-					else {
-						if (y > y_) y = y_;
-						else if (y2 < y_) y2 = y_;
-					}
-				}
-			}
-
-            return {
-                x: x,
-                y: y,
-                x2: x2,
-                y2: y2,
-                width: x2 - x,
-                height: y2 - y
-            };
+			return calculateBBox(0, 0, 2, 2, this.transformMatrix);
         },
 
         //Stores the given data with this object..
@@ -670,16 +668,16 @@
         getBBox: function (isWithoutTransform) {
 			if (isWithoutTransform) return this.originalBBox;
 
-            var bbox = elementFunctions.getBBox.apply(this, arguments),
-                halfWidth = bbox.width / 2, halfHeight = bbox.height / 2;
-
-            bbox.x -= halfWidth;
-            bbox.x2 -= halfWidth;
-            bbox.y -= halfHeight;
-            bbox.y2 -= halfHeight;
-            return bbox;
+			var w_h = this._getSVGAttrs(['width', 'height']);
+			var originalWidth = w_h[0];
+			var originalHeight = w_h[1];
+			var x = -originalWidth / 2,
+				y = -originalHeight / 2,
+				x2 = originalWidth / 2,
+				y2 = originalHeight / 2;
+			return calculateBBox(x+1, y+1, x2+1, y2+1, this.transformMatrix);
         },
-        
+
         //Need to fix as width and height are not accurrate since scale is not important..
         _getSVGAttrs: function (attrsToGet) {
             var $el = this.$el,
