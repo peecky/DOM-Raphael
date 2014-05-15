@@ -192,27 +192,44 @@
 
             return this;
         },
-        
+
         //Returns the "bounding box" for this element..
         getBBox: function (isWithoutTransform) {
 			if (isWithoutTransform) return this.originalBBox;
 
-            var attrs = this._getSVGAttrs(["x", "y", "width", "height"]),
-                x = attrs[0],
-                y = attrs[1],
-                width = attrs[2],
-                height = attrs[3];
+			var x, x2, y, y2, x_, y_;
+			var m = this.transformMatrix;
+			for (var i = 0; i <= 2; i += 2) {
+				for (var j = 0; j <= 2; j +=2) {
+					x_ = m.a*i + m.c*j + m.e;
+					y_ = m.b*i + m.d*j + m.f;
+					if (typeof x === 'undefined') {
+						x = x2 = x_;
+					}
+					else {
+						if (x > x_) x = x_;
+						else if (x2 < x_) x2 = x_;
+					}
+					if (typeof y === 'undefined') {
+						y = y2 = y_;
+					}
+					else {
+						if (y > y_) y = y_;
+						else if (y2 < y_) y2 = y_;
+					}
+				}
+			}
 
             return {
                 x: x,
                 y: y,
-                x2: x + width,
-                y2: y + height,
-                width: width,
-                height: height
+                x2: x2,
+                y2: y2,
+                width: x2 - x,
+                height: y2 - y
             };
         },
-        
+
         //Stores the given data with this object..
         data: function (key, value) {
             var dataMap = this.dataMap;
