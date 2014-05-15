@@ -605,6 +605,13 @@
 					}
 					else css['text-anchor'] = self.attrs['text-anchor'];
 					break;
+				case 'src':
+					if (setValues) {
+						css['background-image'] = 'url(' + value + ')';
+						css['background-size'] = '2px 2px';
+						css['background-color'] = 'inherit';
+					}
+					break;
 				case 'stroke-dasharray':
 				case 'path':
 					// ignore
@@ -621,6 +628,7 @@
                 default:
 					console.error('unsupported attr: ' + attr + ': ' + value);
                     css[attr] = value;
+					break;
                 }
 				if (setValues) {
 					self.attrs[attr] = value;
