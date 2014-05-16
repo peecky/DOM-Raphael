@@ -183,9 +183,9 @@
 		_detach: function() {
 			var canvas = this.canvas;
 			if (this.next) this.next.prev = this.prev;
-			else canvas.topElement = this.prev;
+			else canvas.top = this.prev;
 			if (this.prev) this.prev.next = this.next;
-			else canvas.bottomElement = this.next;
+			else canvas.bottom = this.next;
 		},
 
         //Note: currently a rather basic impl and will only transition properties
@@ -328,13 +328,13 @@
 
 		toFront: function() {
 			var canvas = this.canvas;
-			if (canvas.topElement === this) return this;
+			if (canvas.top === this) return this;
 
 			this._detach();
 			this.next = null;
-			this.prev = canvas.topElement;
-			canvas.topElement.next = this;
-			canvas.topElement = this;
+			this.prev = canvas.top;
+			canvas.top.next = this;
+			canvas.top = this;
 
 			this.$el.detach().appendTo(canvas.$el);
 			return this;
@@ -342,13 +342,13 @@
 
 		toBack: function() {
 			var canvas = this.canvas;
-			if (canvas.bottomElement === this) return this;
+			if (canvas.bottom === this) return this;
 
 			this._detach();
 			this.prev = null;
-			this.next = canvas.bottomElement;
-			canvas.bottomElement.prev = this;
-			canvas.bottomElement = this;
+			this.next = canvas.bottom;
+			canvas.bottom.prev = this;
+			canvas.bottom = this;
 
 			this.$el.detach().prependTo(canvas.$el);
 			return this;
@@ -362,7 +362,7 @@
 			this.prev = siblingElement;
 			this.next = siblingElement.next;
 			siblingElement.next = this;
-			if (canvas.topElement === siblingElement) canvas.topElement = this;
+			if (canvas.top === siblingElement) canvas.top = this;
 
 			this.$el.detach().insertAfter(siblingElement.$el);
 			return this;
@@ -376,7 +376,7 @@
 			this.prev = siblingElement.prev;
 			this.next = siblingElement;
 			siblingElement.prev = this;
-			if (canvas.bottomElement === siblingElement) canvas.bottomElement = this;
+			if (canvas.bottom === siblingElement) canvas.bottom = this;
 
 			this.$el.detach().insertBefore(siblingElement.$el);
 			return this;
@@ -470,12 +470,12 @@
 	        canvas.elements.push(this);
 			this.originalBBox = this.getBBox();
 
-			var topElement = canvas.topElement;
+			var topElement = canvas.top;
 			if (topElement) topElement.next = this;
 			this.prev = topElement || null;
 			this.next = null;
-			canvas.topElement = this;
-			if (!canvas.bottomElement) canvas.bottomElement = this;
+			canvas.top = this;
+			if (!canvas.bottom) canvas.bottom = this;
 		},
 
         //Obtains an array of values for the requested SVG attributes.
