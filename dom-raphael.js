@@ -693,7 +693,11 @@
 
         //Center text around point..
         var textHolder = $('<div>').text(text).css("webkit-transform", "translate(-50%, -50%)")
-			.css({ 'white-space': 'pre', font: '10px "Arial"' });
+			.css({
+				'white-space': 'pre',
+				font: '10px "Arial"',
+				'text-align': 'center'
+			});
         this.$el.append(textHolder);
 		this.originalBBox = this.getBBox();
     };
