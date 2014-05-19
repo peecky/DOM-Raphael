@@ -73,6 +73,11 @@
 		}
     }
 
+	// | a c 0 e | | x |
+	// | b d 0 f | | y |
+	// | 0 0 1 0 | | z |
+	// | 0 0 0 1 | | w |
+	// z = 0, w = 1
 	function calculateTransition(x, y, transformMatrix) {
 		var m = transformMatrix;
 		return [m.a*x + m.c*y + m.e, m.b*x + m.d*y + m.f];
@@ -83,7 +88,11 @@
 		xy = calculateTransition(originalX, originalY, transformMatrix);
 		x = x2 = xy[0];
 		y = y2 = xy[1];
-		var params = [originalX, originalY2, originalX2, originalY, originalX2, originalY2];
+		var params = [
+			originalX, originalY2,
+			originalX2, originalY,
+			originalX2, originalY2
+		];
 		for (var i = 0; i < params.length; i += 2) {
 			xy = calculateTransition(params[i], params[i+1], transformMatrix);
 			if (x > xy[0]) x = xy[0];
