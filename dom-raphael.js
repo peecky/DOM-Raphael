@@ -556,7 +556,8 @@
 				end: -1
 			};
 			var dx;
-                
+			var needToRecalculateTextBBox = false;
+
             function getTransformMatrix() {
                 //clone a new copy if not done so..
                 transformMatrix = transformMatrix || new WebKitCSSMatrix(self.transformMatrix);
@@ -597,7 +598,10 @@
 					getTransformMatrix().f = 1 * (value - self.attrs.r);
 					break;
 				case 'text':
-					if (setValues) self.$el.find('div').text(value);
+					if (setValues) {
+						self.$el.find('div').text(value);
+						needToRecalculateTextBBox = true;
+					}
 					else css.text = self.attrs.text;
 					break;
 				case 'text-anchor':
@@ -631,6 +635,7 @@
 				case 'font-weight':
 					if (setValues) {
 						$el.find('div').css(attr, value);
+						needToRecalculateTextBBox = true;
 					}
 					else css[attr] = $el.find('div').css('font-family');
 					break;
@@ -655,6 +660,18 @@
                 if (transformMatrix) {
                     this.matrix = this.transformMatrix = transformMatrix;
                 }
+				if (needToRecalculateTextBBox) {
+					var width = self._getSVGAttrs(['width'])[0];
+					var height = self._getSVGAttrs(['height'])[0];
+					var dx = (width - self.originalBBox.width) / 2;
+					var dy = (height - self.originalBBox.height) / 2;
+					self.originalBBox.x -= dx;
+					self.originalBBox.x2 += dx;
+					self.originalBBox.y -= dy;
+					self.originalBBox.y2 += dy;
+					self.originalBBox.width = width;
+					self.originalBBox.height = height;
+				}
                 return this;
             }
             return css;
