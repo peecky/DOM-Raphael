@@ -29,7 +29,7 @@
 
 	if (typeof WebKitCSSMatrix.prototype.toTransformString === 'undefined')
 		WebKitCSSMatrix.prototype.toTransformString = function() {
-			return '';	// dummy implementation
+			return this.__tstr || '';
 		};
 
     //Creates a new absolutely positioned jQuery obj using the given transform matrix and
@@ -449,6 +449,7 @@
 				deg: deg, rcx: width / 2, rcy: height / 2,
 				sx: sx, sy: sy
 			});
+			transformMatrix.__tstr = tstr;
 			this.$el.css({ '-webkitTransform': "" + transformMatrix });
 			this.transformMatrix = this.matrix = transformMatrix;
 			
