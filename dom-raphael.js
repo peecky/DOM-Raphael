@@ -588,6 +588,7 @@
                 case "stroke-width":
                     css["border-width"] = value;
                     break;
+				case "fill-opacity":
                 case "opacity":
                     //don't allow zero as a valid value as it causes issues..
                     css.opacity = value === 0 ? opacityEpsilon : value;
@@ -744,6 +745,10 @@
     var Rect = function (canvas, x, y, width, height) {
         var transformMatrix = calculateTransformMatrix(x, y, width, height);
 		this._initElement(canvas, transformMatrix, 'rect');
+		this.attrs.x = x;
+		this.attrs.y = y;
+		this.attrs.width = width;
+		this.attrs.height = height;
     };
     Rect.prototype = elementFunctions;
 
