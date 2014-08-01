@@ -60,7 +60,7 @@
 				//.translate(opts.width / 2 - cx, opts.height / 2 - cy)
 				//.translate(opts.x, opts.y)
 				//.translate(cx, cy)
-				.translate(opts.width / 2 + opts.x, opts.height / 2 + opts.y, 1)
+				.translate(opts.width / 2 + opts.x, opts.height / 2 + opts.y, 0)
 				.rotate(0, 0, opts.deg)
 				.translate(-cx, -cy)
 				.scale(opts.width * opts.sx / 2, opts.height * opts.sy / 2)
@@ -69,7 +69,7 @@
 		else {
 	        width = typeof width === "undefined" ? 2 : width;
 	        height = typeof height === "undefined" ? 2 : height;
-	        return new WebKitCSSMatrix().translate(x, y, 1).scale(width/2, height/2);
+	        return new WebKitCSSMatrix().translate(x, y, 0).scale(width/2, height/2);
 		}
     }
 
