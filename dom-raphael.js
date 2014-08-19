@@ -586,8 +586,12 @@
                     css["border-color"] = value;
                     break;
                 case "stroke-width":
+				case "border-width":
                     css["border-width"] = value;
                     break;
+				case "border-radius":
+					css["border-radius"] = value;
+					break;
 				case "fill-opacity":
                 case "opacity":
                     //don't allow zero as a valid value as it causes issues..
